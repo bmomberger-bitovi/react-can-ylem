@@ -31,14 +31,24 @@ TodoItem.propTypes = {
     todo: todoShape.isRequired
 }
 
+//If this override is removed the component 'react-todo-item-not-working' will not work as expected
+YlemComponent.prototype.shouldComponentUpdate = function(props, state) {
+    if(!this.observer){
+        return false;
+    }
+
+    this.shouldUpdate = false;
+    return true;
+}
+
 function ReactToObserveWebComponent(ReactComponent, tagName) {
     class YComponent extends YlemComponent {
         render() {
             return (<ReactComponent {...this.props}></ReactComponent>);
         }
-    }
+    }    
 
-    YlemComponent.propTypes = ReactComponent.propTypes;
+    YComponent.propTypes = ReactComponent.propTypes;
 
     //Just using react-to-web-component
     //const MyComponentWebComponent = reactToWebComponent(ReactComponent, React, ReactDOM);
@@ -132,6 +142,11 @@ CanComponent.extend({
                 updateName:from="this.updateName"
                 cancelEdit:from="this.cancelEdit"
             ></react-todo-item>
+            <react-todo-item-not-working 
+                myId:from="todo.id" 
+                name:from="todo.name" 
+                complete:from="todo.complete"
+            ></react-todo-item-not-working>
         {{/ for }}
       </ul>
     `,
@@ -303,4 +318,35 @@ ReactTodoItem.propTypes = {
     ]),
 };
 
+class ReactTodoItemNotWorking extends React.Component {
+    render() {
+        const props = this.props;
+        let classes = "todo ";
+        classes += props.complete ? "completed " : "";
+
+        return <li className={classes}>
+            <div className="view">
+                <input className="toggle" type="checkbox" checked={props.complete} onChange={()=>{}} />
+                <label>#{props.name}</label>
+                <button className="destroy"></button>
+            </div>
+            <input className="edit" type="text" value={props.name} onChange={()=>{}}/>
+        </li>;
+    }
+}
+
+ReactTodoItemNotWorking.defaultProps = {
+    myId:0,
+    name:"",
+    complete:false
+}
+
+ReactTodoItemNotWorking.propTypes = {
+    myId: PropTypes.number,
+    name: PropTypes.string,
+    complete: PropTypes.bool
+
+};
+
 ReactToObserveWebComponent(ReactTodoItem, "react-todo-item");
+ReactToObserveWebComponent(ReactTodoItemNotWorking, "react-todo-item-not-working");
