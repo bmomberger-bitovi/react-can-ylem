@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { Component as YlemComponent } from "ylem";
-import reactToWebComponent from "react-to-webcomponent";
+import reactToCanWebComponent from "react-to-can-webcomponent";
 import {
     Component as CanComponent, DefineMap, DefineList, fixture, realtimeRestModel, route,
     domEvents, enterEvent
@@ -31,16 +31,6 @@ TodoItem.propTypes = {
     todo: todoShape.isRequired
 }
 
-//If this override is removed the component 'react-todo-item-not-working' will not work as expected
-YlemComponent.prototype.shouldComponentUpdate = function(props, state) {
-    if(!this.observer){
-        return false;
-    }
-
-    this.shouldUpdate = false;
-    return true;
-}
-
 function ReactToObserveWebComponent(ReactComponent, tagName) {
     class YComponent extends YlemComponent {
         render() {
@@ -51,10 +41,11 @@ function ReactToObserveWebComponent(ReactComponent, tagName) {
     YComponent.propTypes = ReactComponent.propTypes;
 
     //Just using react-to-web-component
-    //const MyComponentWebComponent = reactToWebComponent(ReactComponent, React, ReactDOM);
+    // This also works correctly.  Uncomment this line & comment the next line to try it.
+    //const MyComponentWebComponent = reactToCanWebComponent(ReactComponent, React, ReactDOM);
 
     //Using ylem + react-to-web-component
-    const MyComponentWebComponent = reactToWebComponent(YComponent, React, ReactDOM);
+    const MyComponentWebComponent = reactToCanWebComponent(YComponent, React, ReactDOM);
 
     customElements.define(tagName, MyComponentWebComponent);
 
